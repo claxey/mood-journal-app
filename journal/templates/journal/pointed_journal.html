@@ -1,0 +1,251 @@
+{% extends 'journal/base.html' %}
+
+{% block title %}Pointed Journal{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-4 mb-4">Pointed Journal</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pointedModal">
+            <i class="fas fa-plus"></i> New Entry
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-star"></i> Key Points</h5>
+            </div>
+            <div class="card-body">
+                <div class="pointed-list">
+                    {% for entry in entries %}
+                    <div class="pointed-item mb-3 p-3 border-bottom">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="mb-2">{{ entry.title }}</h5>
+                                <p class="text-muted mb-2">{{ entry.content|truncatewords:20 }}</p>
+                                <small class="text-muted">
+                                    {{ entry.created_at|date:"M d, Y" }}
+                                </small>
+                            </div>
+                            <div class="pointed-actions">
+                                <a href="{% url 'journal:edit_pointed' entry.id %}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="post" action="{% url 'journal:delete_pointed' entry.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="pointed-tags mt-2">
+                            {% for tag in entry.tags.all %}
+                            <span class="badge bg-info me-1">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No entries yet. Start journaling!</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Insights</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <h6>Most Common Topics</h6>
+                        <canvas id="topicsChart"></canvas>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h6>Writing Frequency</h6>
+                        <canvas id="frequencyChart"></canvas>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h6>Recent Activity</h6>
+                        <div class="activity-timeline">
+                            {% for entry in recent_entries %}
+                            <div class="activity-item mb-3">
+                                <div class="d-flex">
+                                    <div class="activity-icon me-3">
+                                        <i class="fas fa-pen-fancy"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">{{ entry.title }}</h6>
+                                        <p class="text-muted mb-0">{{ entry.created_at|date:"F j, Y" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pointed Journal Modal -->
+<div class="modal fade" id="pointedModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Pointed Entry</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'journal:pointed_create' %}" id="pointed-form">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="id_title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="id_title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_content" class="form-label">Content</label>
+                        <textarea class="form-control" id="id_content" name="content" rows="5" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_category" class="form-label">Category</label>
+                        <select class="form-select" id="id_category" name="category" required>
+                            <option value="reflection">Reflection</option>
+                            <option value="idea">Idea</option>
+                            <option value="quote">Quote</option>
+                            <option value="memory">Memory</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_tags" class="form-label">Tags</label>
+                        <input type="text" class="form-control" id="id_tags" name="tags" placeholder="Enter tags separated by commas">
+                        <small class="text-muted">Example: personal, goals, inspiration</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pointed-item {
+        transition: all 0.3s ease;
+    }
+    
+    .pointed-item:hover {
+        background-color: rgba(37, 77, 112, 0.05);
+    }
+    
+    .pointed-actions {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .pointed-item:hover .pointed-actions {
+        opacity: 1;
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        background-color: var(--cream);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--brown);
+    }
+    
+    .badge {
+        font-size: 0.9rem;
+        padding: 0.5em 0.8em;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+$(document).ready(function() {
+    // Add animation to pointed items
+    $('.pointed-item').each(function(index) {
+        $(this).css({
+            'opacity': '0',
+            'transform': 'translateY(20px)'
+        }).delay(index * 100).animate({
+            'opacity': '1',
+            'transform': 'translateY(0)'
+        }, 500);
+    });
+
+    // Initialize topics chart
+    const topicsCtx = document.getElementById('topicsChart').getContext('2d');
+    new Chart(topicsCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ topic_labels|safe }},
+            datasets: [{
+                data: {{ topic_data|safe }},
+                backgroundColor: [
+                    'rgb(149, 76, 46)',
+                    'rgb(37, 77, 112)',
+                    'rgb(19, 29, 79)',
+                    'rgb(239, 228, 210)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Initialize frequency chart
+    const frequencyCtx = document.getElementById('frequencyChart').getContext('2d');
+    new Chart(frequencyCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ frequency_labels|safe }},
+            datasets: [{
+                label: 'Entries',
+                data: {{ frequency_data|safe }},
+                backgroundColor: 'rgb(149, 76, 46)'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

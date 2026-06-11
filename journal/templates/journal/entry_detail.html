@@ -1,0 +1,51 @@
+{% extends 'journal/base.html' %}
+
+{% block title %}{{ entry.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="card-title entry-title">{{ entry.title }}</h1>
+                    <span class="entry-date">{{ entry.created_at|date:"F j, Y" }}</span>
+                </div>
+                <div class="entry-content">
+                    {{ entry.content|linebreaks }}
+                </div>
+                <div class="mt-4">
+                    <a href="{% url 'journal:entry_list' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left"></i> Back to Entries
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .entry-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--dark-blue);
+    }
+    
+    .entry-content p {
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Fade in the entry content
+    $('.card').css('opacity', '0').animate({
+        'opacity': '1'
+    }, 500);
+});
+</script>
+{% endblock %} 

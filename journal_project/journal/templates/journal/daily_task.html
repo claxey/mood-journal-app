@@ -1,0 +1,106 @@
+{% extends 'journal/base.html' %}
+
+{% block title %}Daily Tasks{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Daily Tasks</h2>
+    
+    <!-- Task Form -->
+    <div class="form-container">
+        <h3>Add New Task</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn">Add Task</button>
+        </form>
+    </div>
+
+    <!-- Task List -->
+    <div class="task-list">
+        <h3>Your Tasks</h3>
+        {% if tasks %}
+            {% for task in tasks %}
+                <div class="task-item">
+                    <h4>{{ task.title }}</h4>
+                    <p>{{ task.description }}</p>
+                    <div class="task-details">
+                        <span class="due-date">Due: {{ task.due_date }}</span>
+                        <span class="status {{ task.status }}">{{ task.get_status_display }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No tasks yet. Add your first task above!</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .form-container {
+        background: #f5f5f5;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+    
+    .task-list {
+        margin-top: 30px;
+    }
+    
+    .task-item {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .task-details {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        color: #666;
+    }
+    
+    .status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.9em;
+    }
+    
+    .status.pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status.completed {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status.cancelled {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .btn:hover {
+        background: #0056b3;
+    }
+</style>
+{% endblock %} 

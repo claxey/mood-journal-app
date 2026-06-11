@@ -1,0 +1,84 @@
+{% extends 'journal/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit Entry{% else %}New Entry{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title mb-4">
+                    {% if form.instance.pk %}Edit Entry{% else %}New Entry{% endif %}
+                </h1>
+                <form method="post" id="entry-form">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                        {{ form.title }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.content.id_for_label }}" class="form-label">Content</label>
+                        {{ form.content }}
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'journal:entry_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save Entry</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    #entry-form input,
+    #entry-form textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    #entry-form textarea {
+        min-height: 200px;
+        resize: vertical;
+    }
+
+    #entry-form input:focus,
+    #entry-form textarea:focus {
+        outline: none;
+        border-color: var(--blue);
+        box-shadow: 0 0 0 2px rgba(37, 77, 112, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Add form validation
+    $('#entry-form').on('submit', function(e) {
+        const title = $('#{{ form.title.id_for_label }}').val().trim();
+        const content = $('#{{ form.content.id_for_label }}').val().trim();
+        
+        if (!title || !content) {
+            e.preventDefault();
+            alert('Please fill in all fields');
+            return false;
+        }
+    });
+
+    // Add character counter for title
+    $('#{{ form.title.id_for_label }}').on('input', function() {
+        const maxLength = 200;
+        const currentLength = $(this).val().length;
+        if (currentLength > maxLength) {
+            $(this).val($(this).val().substring(0, maxLength));
+        }
+    });
+});
+</script>
+{% endblock %} 

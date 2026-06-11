@@ -1,0 +1,64 @@
+{% extends 'journal/base.html' %}
+
+{% block title %}My Journal Entries{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="display-4 mb-4">My Journal Entries</h1>
+        <a href="{% url 'journal:entry_create' %}" class="btn btn-primary mb-4">
+            <i class="fas fa-plus"></i> New Entry
+        </a>
+    </div>
+</div>
+
+<div class="row" id="entries-container">
+    {% for entry in entries %}
+    <div class="col-md-6 col-lg-4 mb-4 entry-card">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title entry-title">{{ entry.title }}</h5>
+                <p class="entry-date">{{ entry.created_at|date:"F j, Y" }}</p>
+                <p class="card-text">{{ entry.content|truncatewords:30 }}</p>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a href="{% url 'journal:entry_detail' entry.id %}" class="btn btn-outline-primary btn-sm">Read More</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            No entries yet. Start your journaling journey by creating your first entry!
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Add fade-in animation to cards
+    $('.entry-card').each(function(index) {
+        $(this).css({
+            'opacity': '0',
+            'transform': 'translateY(20px)'
+        }).delay(index * 100).animate({
+            'opacity': '1',
+            'transform': 'translateY(0)'
+        }, 500);
+    });
+
+    // Add hover effect
+    $('.card').hover(
+        function() {
+            $(this).find('.card-footer').slideDown(200);
+        },
+        function() {
+            $(this).find('.card-footer').slideUp(200);
+        }
+    );
+});
+</script>
+{% endblock %} 

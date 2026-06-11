@@ -1,0 +1,374 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Journal App{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'journal/img/logo.png' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --cream: rgb(239, 228, 210);
+            --blue: rgb(37, 77, 112);
+            --dark-blue: rgb(19, 29, 79);
+            --brown: rgb(149, 76, 46);
+        }
+        
+        body {
+            background-color: var(--cream);
+            color: var(--dark-blue);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background-color: var(--blue);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand, .nav-link {
+            color: var(--cream) !important;
+        }
+
+        .nav-link:hover {
+            color: var(--brown) !important;
+        }
+
+        .card {
+            background-color: white;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .btn-primary {
+            background-color: var(--brown);
+            border-color: var(--brown);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--blue);
+            border-color: var(--blue);
+        }
+
+        .entry-title {
+            color: var(--dark-blue);
+        }
+
+        .entry-date {
+            color: var(--brown);
+            font-size: 0.9rem;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .navbar-brand-logo {
+            height: 44px;
+            width: auto;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Sulu — pink, white & black only */
+        body.sulu-theme {
+            --sulu-pink: #ff4d8d;
+            --sulu-pink-soft: #ffb8d2;
+            --sulu-pink-pale: #fff0f6;
+            --sulu-white: #ffffff;
+            --sulu-black: #0d0d0d;
+            background: linear-gradient(160deg, var(--sulu-white) 0%, var(--sulu-pink-pale) 45%, var(--sulu-pink-soft) 100%);
+            color: var(--sulu-black);
+            min-height: 100vh;
+        }
+
+        body.sulu-theme .sulu-welcome {
+            background: var(--sulu-pink);
+            color: var(--sulu-black);
+            text-align: center;
+            padding: 0.55rem 1rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            border-bottom: 2px solid var(--sulu-black);
+        }
+
+        body.sulu-theme .sulu-welcome span {
+            font-weight: 800;
+            text-transform: lowercase;
+        }
+
+        body.sulu-theme .navbar {
+            background-color: var(--sulu-black);
+            box-shadow: 0 4px 0 var(--sulu-pink);
+        }
+
+        body.sulu-theme .navbar-brand {
+            color: var(--sulu-pink) !important;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        body.sulu-theme .navbar-brand-logo {
+            border: 2px solid var(--sulu-pink);
+            border-radius: 10px;
+        }
+
+        body.sulu-theme .nav-link,
+        body.sulu-theme .nav-link button {
+            color: var(--sulu-white) !important;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        body.sulu-theme .nav-link:hover,
+        body.sulu-theme .nav-link button:hover {
+            color: var(--sulu-pink) !important;
+            transform: translateY(-1px);
+        }
+
+        body.sulu-theme .card {
+            background-color: var(--sulu-white);
+            border: 2px solid var(--sulu-black);
+            border-radius: 14px;
+            box-shadow: 4px 4px 0 var(--sulu-pink);
+        }
+
+        body.sulu-theme .card:hover {
+            transform: translateY(-4px) rotate(-0.3deg);
+            box-shadow: 6px 6px 0 var(--sulu-pink);
+        }
+
+        body.sulu-theme .card-header.bg-primary {
+            background-color: var(--sulu-pink) !important;
+            color: var(--sulu-black) !important;
+            border-bottom: 2px solid var(--sulu-black);
+        }
+
+        body.sulu-theme .btn-primary {
+            background-color: var(--sulu-pink);
+            border: 2px solid var(--sulu-black);
+            color: var(--sulu-black);
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 0.45rem 1.25rem;
+        }
+
+        body.sulu-theme .btn-primary:hover,
+        body.sulu-theme .btn-primary:focus {
+            background-color: var(--sulu-black);
+            border-color: var(--sulu-pink);
+            color: var(--sulu-pink);
+        }
+
+        body.sulu-theme .btn-outline-primary {
+            color: var(--sulu-black);
+            border: 2px solid var(--sulu-pink);
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        body.sulu-theme .btn-outline-primary:hover {
+            background-color: var(--sulu-pink);
+            border-color: var(--sulu-black);
+            color: var(--sulu-black);
+        }
+
+        body.sulu-theme .btn-outline-secondary {
+            color: var(--sulu-black);
+            border: 2px solid var(--sulu-black);
+            border-radius: 999px;
+        }
+
+        body.sulu-theme .btn-outline-secondary:hover {
+            background-color: var(--sulu-black);
+            color: var(--sulu-pink);
+            border-color: var(--sulu-pink);
+        }
+
+        body.sulu-theme .entry-title,
+        body.sulu-theme h1,
+        body.sulu-theme h2,
+        body.sulu-theme h3,
+        body.sulu-theme h4,
+        body.sulu-theme h5,
+        body.sulu-theme .card-title {
+            color: var(--sulu-black);
+        }
+
+        body.sulu-theme .display-4 {
+            font-weight: 800;
+            position: relative;
+            display: inline-block;
+        }
+
+        body.sulu-theme .display-4::after {
+            content: '';
+            display: block;
+            height: 4px;
+            width: 60%;
+            background: var(--sulu-pink);
+            margin-top: 0.25rem;
+            border-radius: 2px;
+        }
+
+        body.sulu-theme .entry-date {
+            color: var(--sulu-pink);
+            font-weight: 600;
+        }
+
+        body.sulu-theme .text-muted {
+            color: rgba(13, 13, 13, 0.65) !important;
+        }
+
+        body.sulu-theme .alert-info {
+            background-color: var(--sulu-white);
+            border: 2px dashed var(--sulu-pink);
+            color: var(--sulu-black);
+        }
+
+        body.sulu-theme .progress {
+            background-color: var(--sulu-white);
+            border: 2px solid var(--sulu-black);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        body.sulu-theme .progress-bar {
+            background-color: var(--sulu-pink);
+            color: var(--sulu-black);
+            font-weight: 700;
+        }
+
+        body.sulu-theme .form-control,
+        body.sulu-theme .form-select,
+        body.sulu-theme textarea {
+            border: 2px solid var(--sulu-black);
+            border-radius: 10px;
+            background-color: var(--sulu-white);
+            color: var(--sulu-black);
+        }
+
+        body.sulu-theme .form-control:focus,
+        body.sulu-theme .form-select:focus,
+        body.sulu-theme textarea:focus {
+            border-color: var(--sulu-pink);
+            box-shadow: 0 0 0 0.2rem rgba(255, 77, 141, 0.25);
+        }
+
+        body.sulu-theme .modal-content {
+            border: 2px solid var(--sulu-black);
+            border-radius: 14px;
+            box-shadow: 6px 6px 0 var(--sulu-pink);
+        }
+
+        body.sulu-theme .modal-header {
+            background-color: var(--sulu-pink);
+            color: var(--sulu-black);
+            border-bottom: 2px solid var(--sulu-black);
+        }
+
+        body.sulu-theme .border-bottom {
+            border-color: var(--sulu-pink) !important;
+        }
+
+        body.sulu-theme a {
+            color: var(--sulu-black);
+        }
+
+        body.sulu-theme a:hover {
+            color: var(--sulu-pink);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body{% if user.is_authenticated and user.username == 'sulu' %} class="sulu-theme"{% endif %}>
+    {% if user.is_authenticated and user.username == 'sulu' %}
+    <div class="sulu-welcome">
+        i got you merii chaashniii&lt;3
+    </div>
+    {% endif %}
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'journal:entry_list' %}">
+                <img src="{% static 'journal/img/logo.png' %}" alt="My Journal" class="navbar-brand-logo">
+                My Journal
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'journal:entry_list' %}">
+                            <i class="fas fa-pen feature-icon"></i>Entries
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'journal:daily_task' %}">
+                            <i class="fas fa-tasks feature-icon"></i>Daily Tasks
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'journal:goals' %}">
+                            <i class="fas fa-bullseye feature-icon"></i>Goals
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'journal:pointed_journal' %}">
+                            <i class="fas fa-map-pin feature-icon"></i>Pointed Journal
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'journal:daily_tracker' %}">
+                            <i class="fas fa-chart-line feature-icon"></i>Daily Tracker
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'journal:vent' %}">
+                            <i class="fas fa-wind feature-icon"></i>Vent
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link border-0 bg-transparent">
+                                <i class="fas fa-sign-out-alt feature-icon"></i>Logout
+                            </button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt feature-icon"></i>Login
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,144 @@
+{% extends 'journal/base.html' %}
+
+{% block title %}Goals{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Your Goals</h2>
+    
+    <!-- Goal Form -->
+    <div class="form-container">
+        <h3>Add New Goal</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn">Add Goal</button>
+        </form>
+    </div>
+
+    <!-- Goals List -->
+    <div class="goals-list">
+        <h3>Current Goals</h3>
+        {% if goals %}
+            {% for goal in goals %}
+                <div class="goal-item">
+                    <h4>{{ goal.title }}</h4>
+                    <p>{{ goal.description }}</p>
+                    <div class="goal-details">
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: {{ goal.progress }}%"></div>
+                            <span class="progress-text">{{ goal.progress }}%</span>
+                        </div>
+                        <div class="goal-meta">
+                            <span class="target-date">Target: {{ goal.target_date }}</span>
+                            <span class="status {{ goal.status }}">{{ goal.get_status_display }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No goals yet. Add your first goal above!</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .form-container {
+        background: #f5f5f5;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+    
+    .goals-list {
+        margin-top: 30px;
+    }
+    
+    .goal-item {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .goal-details {
+        margin-top: 15px;
+    }
+    
+    .progress-container {
+        background: #e9ecef;
+        border-radius: 4px;
+        height: 20px;
+        margin-bottom: 10px;
+        position: relative;
+    }
+    
+    .progress-bar {
+        background: #007bff;
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+    
+    .progress-text {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #000;
+        font-size: 0.9em;
+    }
+    
+    .goal-meta {
+        display: flex;
+        justify-content: space-between;
+        color: #666;
+        font-size: 0.9em;
+    }
+    
+    .status {
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+    
+    .status.not_started {
+        background: #e9ecef;
+        color: #495057;
+    }
+    
+    .status.in_progress {
+        background: #cce5ff;
+        color: #004085;
+    }
+    
+    .status.completed {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status.abandoned {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .btn:hover {
+        background: #0056b3;
+    }
+</style>
+{% endblock %} 
