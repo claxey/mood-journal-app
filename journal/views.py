@@ -358,11 +358,11 @@ class DailyTrackerView(LoginRequiredMixin, ListView):
         current_date = today
         while trackers.filter(date=current_date).exists():
             streak += 1
-            current_date -= timezone.timedelta(days=1)
+            current_date -= timedelta(days=1)
         context['current_streak'] = streak
         
         # Weekly progress
-        week_start = today - timezone.timedelta(days=today.weekday())
+        week_start = today - timedelta(days=today.weekday())
         week_trackers = trackers.filter(date__gte=week_start)
         weekly_completed = sum(t.completed_tasks for t in week_trackers)
         weekly_total = sum(t.completed_tasks + t.pending_tasks for t in week_trackers)
